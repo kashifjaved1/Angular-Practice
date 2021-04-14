@@ -91,9 +91,8 @@ export class SignupComponent implements OnInit {
   signUp(): void {
     this.apiService.signup('/register', this.signUpForm.value).subscribe((res) => {
       if (res) {
-        console.log(res);
         AuthUtils.setAuth(res.token);
-        this.router.navigate(['index']);
+        this.router.navigate(['index'], {queryParams: {id: res.id}});
       }
     }, (error) => {
       console.log(error);

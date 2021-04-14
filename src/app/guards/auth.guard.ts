@@ -14,7 +14,7 @@ export class AuthGuard implements CanActivate {
     route: ActivatedRouteSnapshot,
     state: RouterStateSnapshot): any {
     if (AuthUtils.getAuth()) {
-    return true;
+      return true;
     }
 
     return false;

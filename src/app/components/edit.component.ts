@@ -69,13 +69,12 @@ export class EditComponent implements OnInit {
   ) {}
 
   ngOnInit(): void {
+
     this.route.queryParams.subscribe((params) => {
-      this.id = params.id;
-      this.apiService.getUser('/edit/' + params.id).subscribe((res) => {
+      this.apiService.getUser('/users/' + params.id).subscribe((res) => {
           this.editForm = new FormGroup({
-            id: new FormControl(params.id),
-            firstname: new FormControl(String(res.first_name), [Validators.required]),
-            lastname: new FormControl(String(res.last_name), [Validators.required])
+            firstname: new FormControl(String(res.data.first_name), [Validators.required]),
+            lastname: new FormControl(String(res.data.last_name), [Validators.required])
           });
         },
         (error) => {
@@ -83,14 +82,12 @@ export class EditComponent implements OnInit {
         });
     });
 
-
   }
 
   edit(): void {
-    this.apiService.updateUser('/update', this.editForm.value).subscribe((res) => {
+    this.apiService.updateUser('/users/', this.editForm.value).subscribe((res) => {
       console.log(res);
-      const idx2 = res.id * 2;
-      this.router.navigate(['index'], {queryParams: {id: idx2} /* <- DemoExample Code | Original code -> {id: res.id * 2}*/});
+      this.router.navigate(['index']);
     }, error => {
        console.log(error);
        this.snackBar.open(error.message, 'X');

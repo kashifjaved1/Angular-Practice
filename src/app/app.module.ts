@@ -28,7 +28,7 @@ import { NotFoundComponent } from './components/not-found.component';
     LoginComponent,
     IndexComponent,
     EditComponent,
-    NotFoundComponent
+    NotFoundComponent,
   ],
   imports: [
     BrowserModule,

@@ -2,28 +2,30 @@ import {Component, OnInit} from '@angular/core';
 import {ActivatedRoute, Router} from "@angular/router";
 import {ApiService} from "../services/api.service";
 import {MatSnackBar} from "@angular/material/snack-bar";
+import {User} from "../models/user";
 
 @Component({
   selector: 'app-index',
   template: `
-    <div fxLayout="column" fxLayoutAlign="end center">
-      <mat-card fxLayout="row" fxLayoutGap="10em">
-        <div fxLayout="column" class="card-width">
-          <mat-card-title>
-            Dashboard
-          </mat-card-title>
-          <mat-card-content>
-            <h3>Displaying "User ID: {{this.id}}" as Example, but purpose is that we can show any kind of data
-              here.</h3>
-          </mat-card-content>
-        </div>
-        <div fxLayoutGap="5px">
-          <button mat-button (click)="setIdUrl()">Edit Profile</button>
-          <button class="delBtn" mat-button (click)="delete()">Delete</button>
-        </div>
-      </mat-card>
+    <div fxLayout="column">
+      <div fxLayout="row" fxLayoutAlign="end" style="margin-top: 5px">
+        <button class="btn" (click)="logout()" mat-button>Logout</button>
+      </div>
+      <div fxLayout="row" fxLayoutAlign="center center">
+        <button mat-button *ngFor="let user of users" (click)="edit(user.id)">
+          <mat-card>
+            <mat-card-title>
+              {{user.first_name + ' ' + user.last_name}}
+            </mat-card-title>
+            <mat-card-content>
+              {{user.email}}
+            </mat-card-content>
+          </mat-card>
+        </button>
+      </div>
     </div>
 
+    <router-outlet></router-outlet>
   `,
   styles: [`
 
@@ -33,18 +35,8 @@ import {MatSnackBar} from "@angular/material/snack-bar";
       margin-top: 10%;
     }
 
-    card-width {
-      max-width: 500px;
-    }
-
-    button {
-      padding: 1em 2em;
-      background-color: #139d18;
+    .btn {
       color: white;
-    }
-
-    .delBtn {
-      background-color: red;
     }
 
   `]
@@ -52,6 +44,8 @@ import {MatSnackBar} from "@angular/material/snack-bar";
 export class IndexComponent implements OnInit {
 
   id: any;
+  users: User[] = [];
+  userId: any;
 
   constructor(private route: ActivatedRoute,
               private router: Router,
@@ -64,24 +58,19 @@ export class IndexComponent implements OnInit {
     this.route.queryParams.subscribe((params) => {
       this.id = params.id;
     });
-  }
 
-
-  setIdUrl(): void {
-    this.route.queryParams.subscribe((params) => {
-
-      this.router.navigate(['edit'], {queryParams: {id: params.id}});
+    this.apiService.getUserList(1).subscribe((res) => {
+      this.users = res.data;
     });
   }
 
-  delete(): void {
-    this.apiService.delUser('/delete/', this.id).subscribe((res) => {
-        this.snackBar.open(res.message, 'X');
-      },
-      (error) => {
-        console.log(error);
-        this.snackBar.open(error.message);
-      });
+  edit(userId: number) {
+    this.router.navigate(['index/edit'], {queryParams: {id: userId}});
+  }
+
+  logout(): void {
+    localStorage.removeItem('auth_token');
+    this.router.navigateByUrl('');
   }
 
 }
